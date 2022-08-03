@@ -28,7 +28,7 @@ describe('Soul', () => {
     expect(await soul.ownerOf('0')).to.equal(signers[1].address);
   });
 
-  it ('Mints and Locks NFT', async() => {
+  it ('Locks NFT', async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait();
 
