@@ -20,24 +20,24 @@ describe('Soul', () => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait();
 
-    expect(await soul.ownerOf('0')).to.equal(signer.address);
+    expect(await soul.ownerOf('1')).to.equal(signer.address);
 
-    const transferTx = await soul.transferFrom(signer.address, signers[1].address, '0');
+    const transferTx = await soul.transferFrom(signer.address, signers[1].address, '1');
     await transferTx.wait();
 
-    expect(await soul.ownerOf('0')).to.equal(signers[1].address);
+    expect(await soul.ownerOf('1')).to.equal(signers[1].address);
   });
 
   it ('Locks NFT', async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait();
 
-    expect(await soul.locked('0')).to.equal(false);
+    expect(await soul.locked('1')).to.equal(false);
 
-    const boundTx = await soul.bound('0');
+    const boundTx = await soul.bound('1');
     await boundTx.wait();
 
-    expect(await soul.locked('0')).to.equal(true);
-    await expect(soul.transferFrom(signer.address, signers[1].address, '0')).to.revertedWith('Bonded token');
+    expect(await soul.locked('1')).to.equal(true);
+    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Bonded token');
   });
 });

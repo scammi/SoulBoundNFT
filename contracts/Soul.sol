@@ -16,8 +16,8 @@ contract Soul is ERC721("Soul", "SBT"), IERC5192 ,ERC721URIStorage {
   constructor(){}
 
   function safeMint(address to, string memory uri) public {
-    uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
+    uint256 tokenId = _tokenIdCounter.current();
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, uri);
   }
