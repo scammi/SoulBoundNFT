@@ -20,8 +20,6 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, uri);
-
-    bondedTokens[tokenId] = false;
   }
 
   // The following functions are overrides required by Solidity.
