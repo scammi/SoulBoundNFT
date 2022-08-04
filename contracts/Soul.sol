@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC5192.sol";
 
-contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
+contract Soul is ERC721("Soul", "SBT"), IERC5192 ,ERC721URIStorage {
   using Counters for Counters.Counter;
 
   Counters.Counter private _tokenIdCounter;
 
   mapping (uint256 => bool) bondedTokens;
-  constructor() ERC721("Soul", "SBT") {}
+  constructor(){}
 
   function safeMint(address to, string memory uri) public {
     uint256 tokenId = _tokenIdCounter.current();
