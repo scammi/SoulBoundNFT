@@ -34,10 +34,10 @@ describe('Soul', () => {
 
     expect(await soul.locked('1')).to.equal(false);
 
-    const boundTx = await soul.bound('1');
+    const boundTx = await soul.lockToken('1');
     await boundTx.wait();
 
     expect(await soul.locked('1')).to.equal(true);
-    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Bonded token');
+    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
   });
 });

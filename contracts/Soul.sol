@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC5192.sol";
 
-contract Soul is ERC721("Soul", "SBT"), IERC5192 ,ERC721URIStorage {
+contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
   using Counters for Counters.Counter;
 
   Counters.Counter private _tokenIdCounter;
 
-  mapping (uint256 => bool) bondedTokens;
-  constructor(){}
+  mapping (uint256 => bool) public bondedTokens;
+  constructor() ERC721("Soul", "SBT") {}
 
   function safeMint(address to, string memory uri) public {
     _tokenIdCounter.increment();
@@ -36,20 +36,26 @@ contract Soul is ERC721("Soul", "SBT"), IERC5192 ,ERC721URIStorage {
     return super.tokenURI(tokenId);
   }
 
-  function locked(uint256 tokenId) external view returns (bool) {
+  function locked(uint256 tokenId) 
+    external 
+    view 
+    override(IERC5192) 
+    returns (bool) 
+  {
     return bondedTokens[tokenId];
   }
 
-  function _transfer(address from, address to, uint256 tokenId) 
+  function _beforeTokenTransfer(address from, address to, uint256 tokenId) 
     internal
+    virtual 
     override(ERC721)
   {
-    require(bondedTokens[tokenId] == false, "Bonded token");
-    super._transfer(from, to, tokenId);
+    require(bondedTokens[tokenId] == false, "Locked token");
+    super._beforeTokenTransfer(from, to, tokenId);
   }
 
-  function bound(uint256 tokenId) public {
-    require(ownerOf(tokenId) == msg.sender);
+  function lockToken(uint256 tokenId) public {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner");
     bondedTokens[tokenId] = true;
   }
 }
