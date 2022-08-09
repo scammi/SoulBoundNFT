@@ -43,7 +43,11 @@ describe('Soul', () => {
     expect(await soul.ownerOf('1')).to.equal(signer.address);
   });
 
-  // it ('Locks immediately after transfer', async() => {
-  //   const mintTx =  await soul.safeMint()
-  // });
+  it ('Locks immediately after transfer', async() => {
+    const mintTx = await soul.mintLocked(signer.address, 'www.test.com/1');
+    await mintTx.wait();
+
+    expect(await soul.locked('1')).to.equal(true);
+    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
+  });
 });

@@ -15,11 +15,20 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
   mapping (uint256 => bool) public lockedTOkens;
   constructor() ERC721("Soul", "SBT") {}
 
-  function safeMint(address to, string memory uri) public {
+  function safeMint(address to, string memory uri) public returns(uint256) {
     _tokenIdCounter.increment();
     uint256 tokenId = _tokenIdCounter.current();
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, uri);
+
+    return tokenId;
+  }
+
+  function mintLocked(address to, string memory uri) public returns(uint256) {
+    uint256 tokenId = safeMint(to, uri);
+    lockToken(tokenId);
+
+    return tokenId;
   }
 
   // The following functions are overrides required by Solidity.
