@@ -12,7 +12,7 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
 
   Counters.Counter private _tokenIdCounter;
 
-  mapping (uint256 => bool) public bondedTokens;
+  mapping (uint256 => bool) public lockedTOkens;
   constructor() ERC721("Soul", "SBT") {}
 
   function safeMint(address to, string memory uri) public {
@@ -42,7 +42,7 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
     override(IERC5192) 
     returns (bool) 
   {
-    return bondedTokens[tokenId];
+    return lockedTOkens[tokenId];
   }
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId) 
@@ -50,12 +50,12 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
     virtual 
     override(ERC721)
   {
-    require(bondedTokens[tokenId] == false, "Locked token");
+    require(lockedTOkens[tokenId] == false, "Locked token");
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
   function lockToken(uint256 tokenId) public {
     require(ownerOf(tokenId) == msg.sender, "Not token owner");
-    bondedTokens[tokenId] = true;
+    lockedTOkens[tokenId] = true;
   }
 }
