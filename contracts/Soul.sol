@@ -24,7 +24,7 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
     return tokenId;
   }
 
-  function mintLocked(address to, string memory uri) public returns(uint256) {
+  function lockMint(address to, string memory uri) public returns(uint256) {
     uint256 tokenId = safeMint(to, uri);
     lockToken(tokenId);
 

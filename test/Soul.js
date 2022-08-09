@@ -44,7 +44,7 @@ describe('Soul', () => {
   });
 
   it ('Locks immediately after transfer', async() => {
-    const mintTx = await soul.mintLocked(signer.address, 'www.test.com/1');
+    const mintTx = await soul.lockMint(signer.address, 'www.test.com/1');
     await mintTx.wait();
 
     expect(await soul.locked('1')).to.equal(true);
