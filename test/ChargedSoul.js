@@ -5,50 +5,53 @@ const { ethers } = require("hardhat");
 const ChargedSettingsAbi = require("@charged-particles/protocol-subgraph/abis/ChargedSettings.json");
 const ChargedParticlesAbi = require("@charged-particles/protocol-subgraph/abis/ChargedParticles.json");
 const chargedParticlesMainnetAddress = require("@charged-particles/protocol-subgraph/networks/mainnet.json");
+const chargedSettingsMainnetAddress = chargedParticlesMainnetAddress.chargedSettings.address; 
+const chargedParticlesContractMainnetAddress = chargedParticlesMainnetAddress.chargedParticles.address; 
 
-describe("Charged Particles whitelist ", async function () {
+let customNFTdeployedAddress, adminAddress, provider;
 
-  const chargedSettingsMainnetAddress = chargedParticlesMainnetAddress.chargedSettings.address; 
-  const chargedParticlesContractMainnetAddress = chargedParticlesMainnetAddress.chargedParticles.address; 
-
-  const provider = new ethers.providers.StaticJsonRpcProvider(process.env.RPC_URL_MAINNET, 1);
-
+describe("Charged Particles whitelist ", async() => {
+  provider = new ethers.providers.StaticJsonRpcProvider(process.env.RPC_URL_MAINNET, 1);
   const ChargedParticlesContract = new ethers.Contract(chargedParticlesContractMainnetAddress, ChargedParticlesAbi);
   const ChargedSettingContract = new ethers.Contract(chargedSettingsMainnetAddress, ChargedSettingsAbi);
 
-  it ("Interacts with charged particle protocol", async() => {
-    const contractResponse = await ChargedParticlesContract.connect(provider).getStateAddress();
-    expect(contractResponse).to.be.equal(chargedParticlesMainnetAddress.chargedState.address)
-  });
-
-  it ("Become admin and whitelist custom token.", async() => {
+  beforeEach(async() => {
     // Deploy custom NFT
     const CustomNFT = await ethers.getContractFactory("Soul"); 
     const customNFT = await CustomNFT.deploy();
     const customNFTdeployed = await customNFT.deployed();
-
-    const customNFTdeployedAddress = customNFTdeployed.address;
-
-    // this should revert since you are not the admin
-    const [ signer ] = await ethers.getSigners();
-    
-    await expect(ChargedSettingContract.connect(signer).enableNftContracts([customNFTdeployedAddress])).to
-      .be.revertedWith('Ownable: caller is not the owner');
-
+  
     // Get Charged Particle owner address
-    const adminAddress = await ChargedParticlesContract.connect(provider).owner();
-
+    adminAddress = await ChargedParticlesContract.connect(provider).owner();
+    customNFTdeployedAddress = customNFTdeployed.address;
+  
     // impersonate admin account 
     await hre.network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [adminAddress],
     });
+  });
 
+  afterEach(async () => {
+    await hre.network.provider.request({
+      method: "hardhat_stopImpersonatingAccount",
+      params: [adminAddress],
+    });
+  });
+  
+  it ("Interacts with charged particle protocol", async() => {
+    const contractResponse = await ChargedParticlesContract.connect(provider).getStateAddress();
+    expect(contractResponse).to.be.equal(chargedParticlesMainnetAddress.chargedState.address)
+  });
+  
+  it ("Become admin and whitelist custom token.", async() => {
     // Whitelist custom NFT
     const owner = await ethers.getSigner(adminAddress);
     const whiteListTx = await ChargedSettingContract.connect(owner).enableNftContracts([customNFTdeployedAddress]);
     await whiteListTx.wait();
-
-    console.log(whiteListTx)
   });
+
+  // it ('Mints, locks and energize', async() => {
+
+  // });
 });
