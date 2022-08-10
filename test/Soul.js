@@ -1,4 +1,4 @@
-const { expect, should } = require("chai");
+const { expect } = require("chai");
 
 describe('Soul', () => {
   let soul, signers, signer, user1;
@@ -46,6 +46,4 @@ describe('Soul', () => {
     expect(await soul.locked('1')).to.equal(true);
     await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
   });
-
-  // it.skip('Allow list')
 });
