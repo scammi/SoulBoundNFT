@@ -7,7 +7,6 @@ describe('Soul', () => {
     const Soul = await hre.ethers.getContractFactory("Soul");
 
     soul = await Soul.deploy();
-
     signer = await hre.ethers.getSigner();
     signers = await hre.ethers.getSigners();
   });
@@ -19,12 +18,9 @@ describe('Soul', () => {
   it ('Mints one NFT and transfer', async () => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait();
-
     expect(await soul.ownerOf('1')).to.equal(signer.address);
-
     const transferTx = await soul.transferFrom(signer.address, signers[1].address, '1');
     await transferTx.wait();
-
     expect(await soul.ownerOf('1')).to.equal(signers[1].address);
   });
 
@@ -50,4 +46,6 @@ describe('Soul', () => {
     expect(await soul.locked('1')).to.equal(true);
     await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
   });
+
+  // it.skip('Allow list')
 });
