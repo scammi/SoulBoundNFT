@@ -1,7 +1,9 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const { expect } = require('chai');
+const { ethers } = require('hardhat');
 
 // Charged Particles imports
+const Charged = require("@charged-particles/charged-js-sdk");
+
 const ChargedSettingsAbi = require("@charged-particles/protocol-subgraph/abis/ChargedSettings.json");
 const ChargedParticlesAbi = require("@charged-particles/protocol-subgraph/abis/ChargedParticles.json");
 const chargedParticlesMainnetAddress = require("@charged-particles/protocol-subgraph/networks/mainnet.json");
@@ -50,7 +52,7 @@ describe("Charged Particles whitelist ", async() => {
     expect(contractResponse).to.be.equal(chargedParticlesMainnetAddress.chargedState.address)
   });
   
-  it ('Mints, locks and energize', async() => {
+  it.only ('Mints, locks and energize', async() => {
     const minter = signers[1];
     const soulNFT = await customNFT.connect(minter);
 
@@ -64,5 +66,20 @@ describe("Charged Particles whitelist ", async() => {
       signers[2].address,
       1
     )).to.revertedWith("Locked token");
+    // const provider = new ethers.providers.StaticJsonRpcProvider(process.env.RPC_URL_MAINNET, 1);
+    const charged = new Charged.default({providers: signers[0].provider, signer: minter.provider.getSigner() });
+    // const nft = charged.NFT(soulNFT.address, 1);
+
+    // const chargedProvider = charged.getState();
+    // console.log(chargedProvider);
+
+    const stateAddresses = await charged.utils.getStateAddress();
+
+    expect(stateAddresses).toHaveProperty('1', { "status": "fulfilled", "value": "0x48974C6ae5A0A25565b0096cE3c81395f604140f" });
+
+    // console.log(minter.provider);
+    // const nft = charged.NFT(chargedParticlesMainnetAddress.protonB.address, 1);
+    // const bondCountBeforeDeposit = await nft.getBonds('generic.B');
+    // console.log(bondCountBeforeDeposit);
   });
 });

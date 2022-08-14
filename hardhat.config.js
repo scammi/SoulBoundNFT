@@ -8,7 +8,7 @@ module.exports = {
     hardhat: {
       forking: {
         url: process.env.RPC_URL_MAINNET,
-        blockNumber: 14873514
+        blockNumber: 15341762
       }
     }
   }
