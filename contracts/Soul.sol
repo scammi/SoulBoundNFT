@@ -33,13 +33,16 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
     return tokenId;
   }
 
-  function lockToken(uint256 tokenId) public onlyOwner {
+  function lockToken(uint256 tokenId) public {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner");
     lockedTokens[tokenId] = true;
     emit Locked(tokenId);
   }
 
-  function unLockToken(uint256 tokenId) private {
+  function unlockToken(uint256 tokenId) private {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner");
     lockedTokens[tokenId] = false;
+
     emit Unlocked(tokenId);
   }
 
@@ -70,8 +73,9 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
-  function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) onlyOwner {
-    unLockToken(tokenId);
+  function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner"); 
+    unlockToken(tokenId);
     super._burn(tokenId);
   }
 }
