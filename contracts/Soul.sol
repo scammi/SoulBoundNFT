@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC5192.sol";
 
-contract Soul is ERC721, IERC5192, ERC721URIStorage {
+contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   using Counters for Counters.Counter;
 
   Counters.Counter private _tokenIdCounter;
@@ -39,6 +39,13 @@ contract Soul is ERC721, IERC5192, ERC721URIStorage {
     emit Locked(tokenId);
   }
 
+  function unlockToken(uint256 tokenId) private {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner");
+    lockedTokens[tokenId] = false;
+
+    emit Unlocked(tokenId);
+  }
+
   function locked(uint256 tokenId) 
     external 
     view 
@@ -57,6 +64,11 @@ contract Soul is ERC721, IERC5192, ERC721URIStorage {
     return super.tokenURI(tokenId);
   }
 
+  function burn(uint256 tokenId) public {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner"); 
+    _burn(tokenId);
+  }
+
   function _beforeTokenTransfer(address from, address to, uint256 tokenId) 
     internal
     virtual 
@@ -67,6 +79,7 @@ contract Soul is ERC721, IERC5192, ERC721URIStorage {
   }
 
   function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+    unlockToken(tokenId);
     super._burn(tokenId);
   }
 }

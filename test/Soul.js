@@ -26,7 +26,7 @@ describe('Soul', () => {
 
   it ('Locks NFT', async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
-    await mintTx.wait();
+    await mintTx.wait()
 
     expect(await soul.locked('1')).to.equal(false);
     expect(await soul.ownerOf('1')).to.equal(signer.address);
@@ -43,5 +43,15 @@ describe('Soul', () => {
 
     expect(await soul.locked('1')).to.equal(true);
     await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
+  });
+
+  it ('Burns token',  async() => {
+    const mintTx = await soul.lockMint(signer.address, 'www.test.com/1');
+    await mintTx.wait()
+
+    expect(await soul.balanceOf(signer.address)).to.be.eq(1);
+    await expect(soul.burn('1')).to.emit(soul, "Unlocked");
+
+    expect(await soul.balanceOf(signer.address)).to.be.eq(0);
   });
 });
