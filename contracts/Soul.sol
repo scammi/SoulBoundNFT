@@ -13,6 +13,7 @@ contract Soul is ERC721, IERC5192, ERC721URIStorage {
   Counters.Counter private _tokenIdCounter;
 
   mapping (uint256 => bool) public lockedTokens;
+  
   constructor() ERC721("Soul", "SBT") {}
 
   function safeMint(address to, string memory uri) public returns(uint256) {
