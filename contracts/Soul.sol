@@ -69,6 +69,13 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
     _burn(tokenId);
   }
 
+
+  function isTokenOwner(uint256 tokenId) view internal{
+    if (ownerOf(tokenId) != msg.sender ) {
+     revert NotTokenOwner();
+    }
+  }
+
   function _beforeTokenTransfer(address from, address to, uint256 tokenId) 
     internal
     virtual 
@@ -83,11 +90,5 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
     unlockToken(tokenId);
     super._burn(tokenId);
-  }
-
-  function isTokenOwner(uint256 tokenId) view internal{
-    if (ownerOf(tokenId) != msg.sender ) {
-     revert NotTokenOwner();
-    }
   }
 }
