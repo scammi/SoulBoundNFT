@@ -31,8 +31,10 @@ describe('Soul', () => {
     expect(await soul.locked('1')).to.equal(false);
     expect(await soul.ownerOf('1')).to.equal(signer.address);
 
-    const boundTx = await soul.lockToken('1');
-    await boundTx.wait();
+    // const boundTx = await soul.lockToken('1');
+    // await boundTx.wait();
+
+    await expect(soul.lockToken('1')).to.emit(soul, 'Locked').withArgs(1);
 
     expect(await soul.locked('1')).to.equal(true);
     await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
