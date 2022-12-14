@@ -9,11 +9,13 @@ import "./ERC5192.sol";
 
 contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   using Counters for Counters.Counter;
-
   Counters.Counter private _tokenIdCounter;
 
+  error NotTokenOwner();
+  error BondedToken();
+
   mapping (uint256 => bool) public lockedTokens;
-  
+
   constructor() ERC721("Soul", "SBT") {}
 
   function safeMint(address to, string memory uri) public returns(uint256) {
@@ -34,15 +36,13 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   }
 
   function lockToken(uint256 tokenId) public {
-    require(ownerOf(tokenId) == msg.sender, "Not token owner");
+    isTokenOwner(tokenId);   
     lockedTokens[tokenId] = true;
     emit Locked(tokenId);
   }
 
   function unlockToken(uint256 tokenId) private {
-    require(ownerOf(tokenId) == msg.sender, "Not token owner");
     lockedTokens[tokenId] = false;
-
     emit Unlocked(tokenId);
   }
 
@@ -65,8 +65,15 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   }
 
   function burn(uint256 tokenId) public {
-    require(ownerOf(tokenId) == msg.sender, "Not token owner"); 
+    isTokenOwner(tokenId); 
     _burn(tokenId);
+  }
+
+
+  function isTokenOwner(uint256 tokenId) view internal{
+    if (ownerOf(tokenId) != msg.sender ) {
+     revert NotTokenOwner();
+    }
   }
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId) 
@@ -74,7 +81,9 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
     virtual 
     override(ERC721)
   {
-    require(lockedTokens[tokenId] == false, "Locked token");
+    if (lockedTokens[tokenId] == true) {
+      revert BondedToken();
+    }
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
