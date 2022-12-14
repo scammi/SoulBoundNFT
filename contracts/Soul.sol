@@ -7,16 +7,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC5192.sol";
 
-contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
+contract Soul is ERC721, IERC5192, ERC721URIStorage {
   using Counters for Counters.Counter;
 
   Counters.Counter private _tokenIdCounter;
 
-  mapping (uint256 => bool) public lockedTOkens;
+  mapping (uint256 => bool) public lockedTokens;
   constructor() ERC721("Soul", "SBT") {}
-
-
-  event Locked(uint256 tokenId);
 
   function safeMint(address to, string memory uri) public returns(uint256) {
     _tokenIdCounter.increment();
@@ -35,9 +32,19 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
     return tokenId;
   }
 
-  // The following functions are overrides required by Solidity.
-  function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-    super._burn(tokenId);
+  function lockToken(uint256 tokenId) public {
+    require(ownerOf(tokenId) == msg.sender, "Not token owner");
+    lockedTokens[tokenId] = true;
+    emit Locked(tokenId);
+  }
+
+  function locked(uint256 tokenId) 
+    external 
+    view 
+    override(IERC5192) 
+    returns (bool) 
+  {
+    return lockedTokens[tokenId];
   }
 
   function tokenURI(uint256 tokenId)
@@ -49,27 +56,16 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
     return super.tokenURI(tokenId);
   }
 
-  function locked(uint256 tokenId) 
-    external 
-    view 
-    override(IERC5192) 
-    returns (bool) 
-  {
-    return lockedTOkens[tokenId];
-  }
-
   function _beforeTokenTransfer(address from, address to, uint256 tokenId) 
     internal
     virtual 
     override(ERC721)
   {
-    require(lockedTOkens[tokenId] == false, "Locked token");
+    require(lockedTokens[tokenId] == false, "Locked token");
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
-  function lockToken(uint256 tokenId) public {
-    require(ownerOf(tokenId) == msg.sender, "Not token owner");
-    lockedTOkens[tokenId] = true;
-    emit Locked(tokenId);
+  function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+    super._burn(tokenId);
   }
 }
