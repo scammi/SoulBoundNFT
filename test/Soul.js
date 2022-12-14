@@ -35,15 +35,15 @@ describe('Soul', () => {
     await expect(soul.lockToken('1')).to.emit(soul, 'Locked').withArgs(1);
 
     expect(await soul.locked('1')).to.equal(true);
-    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
+    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWithCustomError(soul, 'BondedToken');
     expect(await soul.ownerOf('1')).to.equal(signer.address);
   });
 
-  it ('Locks immediately after transfer', async() => {
+  it ('lockMint: Locks immediately after transfer', async() => {
     await expect(soul.lockMint(signer.address, 'www.test.com/1')).to.emit(soul, 'Locked').withArgs(1);
 
     expect(await soul.locked('1')).to.equal(true);
-    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWith('Locked token');
+    await expect(soul.transferFrom(signer.address, signers[1].address, '1')).to.revertedWithCustomError(soul, 'BondedToken');
   });
 
   it ('Burns token',  async() => {
@@ -82,4 +82,5 @@ describe('Soul', () => {
 
     expect(await soul.balanceOf(signer.address)).to.be.equal(0);
   });
+
 });

@@ -12,6 +12,7 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   Counters.Counter private _tokenIdCounter;
 
   error NotTokenOwner();
+  error BondedToken();
 
   mapping (uint256 => bool) public lockedTokens;
 
@@ -73,7 +74,9 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
     virtual 
     override(ERC721)
   {
-    require(lockedTokens[tokenId] == false, "Locked token");
+    if (lockedTokens[tokenId] == true) {
+      revert BondedToken();
+    }
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
