@@ -65,7 +65,7 @@ describe("Charged Particles whitelist ", async() => {
       minter.address,
       signers[2].address,
       1
-    )).to.revertedWith("Locked token");
+    )).to.revertedWithCustomError(soulNFT, "BondedToken");
 
     const charged = new Charged.default({providers: signers[0].provider, signer: minter.provider.getSigner() });
 
