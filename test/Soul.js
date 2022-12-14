@@ -25,7 +25,7 @@ describe('Soul', () => {
     expect(await soul.ownerOf('1')).to.equal(signers[1].address);
   });
 
-  it ('Locks NFT', async() => {
+  it ('Mints and locks', async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait()
 
@@ -55,4 +55,23 @@ describe('Soul', () => {
 
     expect(await soul.balanceOf(signer.address)).to.be.eq(0);
   });
+
+  it.only ("Only owner of the nft can lock it", async() => {
+    const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
+    await mintTx.wait()
+
+    await expect(soul.connect(user1).lockToken('1')).to.revertedWithCustomError(soul, 'NotTokenOwner');
+
+    const lockTx = await soul.lockToken('1');
+    await lockTx.wait();
+
+    expect(await soul.locked('1')).to.equal(true);
+  });
+
+  // it.only ("Only owner of the nft burn it", async() => {
+  //   const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
+  //   await mintTx.wait()
+
+  //   expect(await soul.connect(user1).locked('1')).to.revertedWithCustomError(soul, 'NotTokenOwner');
+  // });
 });
