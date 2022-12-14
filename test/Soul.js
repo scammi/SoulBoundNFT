@@ -9,6 +9,7 @@ describe('Soul', () => {
     soul = await Soul.deploy();
     signer = await hre.ethers.getSigner();
     signers = await hre.ethers.getSigners();
+    user1 = signers[1];
   });
 
   it ('Should deploy', async () => {
