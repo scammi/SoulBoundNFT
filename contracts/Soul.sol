@@ -15,6 +15,9 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
   mapping (uint256 => bool) public lockedTOkens;
   constructor() ERC721("Soul", "SBT") {}
 
+
+  event Locked(uint256 tokenId);
+
   function safeMint(address to, string memory uri) public returns(uint256) {
     _tokenIdCounter.increment();
     uint256 tokenId = _tokenIdCounter.current();
@@ -27,6 +30,7 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
   function lockMint(address to, string memory uri) public returns(uint256) {
     uint256 tokenId = safeMint(to, uri);
     lockToken(tokenId);
+    emit Locked(tokenId);
 
     return tokenId;
   }
@@ -66,5 +70,6 @@ contract Soul is ERC721, IERC5192 ,ERC721URIStorage {
   function lockToken(uint256 tokenId) public {
     require(ownerOf(tokenId) == msg.sender, "Not token owner");
     lockedTOkens[tokenId] = true;
+    emit Locked(tokenId);
   }
 }
