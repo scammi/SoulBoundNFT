@@ -9,10 +9,12 @@ import "./ERC5192.sol";
 
 contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
   using Counters for Counters.Counter;
-
   Counters.Counter private _tokenIdCounter;
 
+  error NotTokenOwner();
+
   mapping (uint256 => bool) public lockedTokens;
+
   
   constructor() ERC721("Soul", "SBT") {}
 
