@@ -15,7 +15,6 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
 
   mapping (uint256 => bool) public lockedTokens;
 
-  
   constructor() ERC721("Soul", "SBT") {}
 
   function safeMint(address to, string memory uri) public returns(uint256) {

@@ -56,7 +56,7 @@ describe('Soul', () => {
     expect(await soul.balanceOf(signer.address)).to.be.eq(0);
   });
 
-  it.only ("Only owner of the nft can lock it", async() => {
+  it ("Only owner of the nft can lock it", async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait()
 
@@ -68,10 +68,18 @@ describe('Soul', () => {
     expect(await soul.locked('1')).to.equal(true);
   });
 
-  // it.only ("Only owner of the nft burn it", async() => {
-  //   const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
-  //   await mintTx.wait()
+  it ("Only owner of the nft burn it", async() => {
+    const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
+    await mintTx.wait()
 
-  //   expect(await soul.connect(user1).locked('1')).to.revertedWithCustomError(soul, 'NotTokenOwner');
-  // });
+    expect(await soul.balanceOf(signer.address)).to.be.equal(1);
+
+    await expect(soul.connect(user1).burn('1')).to.revertedWithCustomError(soul, 'NotTokenOwner');
+    expect(await soul.balanceOf(signer.address)).to.be.equal(1);
+
+    const burnTx = await soul.connect(signer).burn('1');
+    await burnTx.wait();
+
+    expect(await soul.balanceOf(signer.address)).to.be.equal(0);
+  });
 });
