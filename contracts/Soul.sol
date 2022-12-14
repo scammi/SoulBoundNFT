@@ -84,4 +84,10 @@ contract Soul is ERC721, IERC5192, Ownable, ERC721URIStorage {
     unlockToken(tokenId);
     super._burn(tokenId);
   }
+
+  function isTokenOwner(uint256 tokenId) view internal{
+    if (ownerOf(tokenId) != msg.sender ) {
+     revert NotTokenOwner();
+    }
+  }
 }
