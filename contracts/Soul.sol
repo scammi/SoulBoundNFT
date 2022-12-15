@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC5192.sol";
 
-contract Soul is ERC721, IERC5192, ERC721URIStorage {
+contract Soul is IERC5192, ERC721, ERC721URIStorage {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -35,7 +35,7 @@ contract Soul is ERC721, IERC5192, ERC721URIStorage {
   }
 
   function lockToken(uint256 tokenId) public {
-    isTokenOwner(tokenId);   
+    onlyTokenOwner(tokenId);   
     lockedTokens[tokenId] = true;
     emit Locked(tokenId);
   }
@@ -64,12 +64,12 @@ contract Soul is ERC721, IERC5192, ERC721URIStorage {
   }
 
   function burn(uint256 tokenId) public {
-    isTokenOwner(tokenId); 
+    onlyTokenOwner(tokenId); 
     _burn(tokenId);
   }
 
 
-  function isTokenOwner(uint256 tokenId) view internal{
+  function onlyTokenOwner(uint256 tokenId) view internal{
     if (ownerOf(tokenId) != msg.sender ) {
      revert NotTokenOwner();
     }
