@@ -32,6 +32,8 @@ describe('Soul', () => {
     expect(await soul.locked('1')).to.equal(false);
     expect(await soul.ownerOf('1')).to.equal(signer.address);
 
+    expect(await soul.creatorOf('1')).to.be.equal(signer.address);
+
     await expect(soul.lockToken('1')).to.emit(soul, 'Locked').withArgs(1);
 
     expect(await soul.locked('1')).to.equal(true);
