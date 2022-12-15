@@ -4,9 +4,11 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+
+import "./lib/Particle.sol";
 import "./ERC5192.sol";
 
-contract Soul is IERC5192, ERC721, ERC721URIStorage {
+contract Soul is IERC5192, ERC721, ERC721URIStorage, Particle{
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -21,6 +23,7 @@ contract Soul is IERC5192, ERC721, ERC721URIStorage {
     _tokenIdCounter.increment();
     uint256 tokenId = _tokenIdCounter.current();
     _safeMint(to, tokenId);
+    _tokenCreator[tokenId] = msg.sender;
     _setTokenURI(tokenId, uri);
 
     return tokenId;
