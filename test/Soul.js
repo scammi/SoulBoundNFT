@@ -1,4 +1,4 @@
-const { expect } = require("chai");
+const { expect, should } = require("chai");
 
 describe('Soul', () => {
   let soul, signers, signer, user1;
@@ -70,7 +70,7 @@ describe('Soul', () => {
 
   it ("Only owner of the nft burn it", async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
-    await mintTx.wait()
+    await mintTx.wait();
 
     expect(await soul.balanceOf(signer.address)).to.be.equal(1);
 
@@ -83,4 +83,14 @@ describe('Soul', () => {
     expect(await soul.balanceOf(signer.address)).to.be.equal(0);
   });
 
+  it.only ("No one can change token uri", async() => {
+    const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
+    await mintTx.wait();
+
+    const newUri = 'changed/uri';
+    const changeUriTx = await soul._setTokenURI(1, newUri);
+
+    const fetchedUri = await soul.tokenURI(1);
+    console.log(fetchedUri)
+  });
 });
