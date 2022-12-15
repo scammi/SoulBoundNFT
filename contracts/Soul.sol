@@ -23,8 +23,9 @@ contract Soul is IERC5192, ERC721, ERC721URIStorage, Particle{
     _tokenIdCounter.increment();
     uint256 tokenId = _tokenIdCounter.current();
     _safeMint(to, tokenId);
-    _tokenCreator[tokenId] = msg.sender;
     _setTokenURI(tokenId, uri);
+
+    _tokenCreator[tokenId] = msg.sender;
 
     return tokenId;
   }
