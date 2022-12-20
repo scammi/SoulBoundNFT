@@ -19,7 +19,7 @@ contract Soul is IERC5192, ERC721, ERC721URIStorage, Particle{
 
   constructor() ERC721("Soul", "SBT") {}
 
-  function safeMint(address to, string memory uri) public returns(uint256) {
+  function safeMint(address to, string memory uri) public payable returns(uint256) {
     _tokenIdCounter.increment();
     uint256 tokenId = _tokenIdCounter.current();
     _safeMint(to, tokenId);
@@ -30,7 +30,7 @@ contract Soul is IERC5192, ERC721, ERC721URIStorage, Particle{
     return tokenId;
   }
 
-  function lockMint(address to, string memory uri) public returns(uint256) {
+  function lockMint(address to, string memory uri) public payable returns(uint256) {
     uint256 tokenId = safeMint(to, uri);
     lockToken(tokenId);
     emit Locked(tokenId);
