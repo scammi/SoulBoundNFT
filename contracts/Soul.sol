@@ -5,10 +5,16 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+import "./lib/BlackholePrevention.sol";
 import "./lib/Particle.sol";
 import "./ERC5192.sol";
 
-contract Soul is IERC5192, ERC721, ERC721URIStorage, Particle{
+contract Soul is 
+  IERC5192, 
+  ERC721, 
+  ERC721URIStorage, 
+  Particle
+{
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 

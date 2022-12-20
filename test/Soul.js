@@ -1,4 +1,5 @@
 const { expect, should } = require("chai");
+const { ethers } = require("hardhat");
 
 describe('Soul', () => {
   let soul, signers, signer, user1;
@@ -58,7 +59,7 @@ describe('Soul', () => {
     expect(await soul.balanceOf(signer.address)).to.be.eq(0);
   });
 
-  it ("Only owner of the nft can lock it", async() => {
+  it ('Only owner of the nft can lock it', async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait()
 
@@ -70,7 +71,7 @@ describe('Soul', () => {
     expect(await soul.locked('1')).to.equal(true);
   });
 
-  it ("Only owner of the nft burn it", async() => {
+  it ('Only owner of the nft burn it', async() => {
     const mintTx = await soul.safeMint(signer.address, 'www.test.com/1');
     await mintTx.wait();
 
@@ -83,5 +84,28 @@ describe('Soul', () => {
     await burnTx.wait();
 
     expect(await soul.balanceOf(signer.address)).to.be.equal(0);
+  });
+
+  it ('Mints on payable and withdraw eth', async() => {
+    const mintTx = await soul.safeMint(signer.address, 'www.test.com/1', { value: ethers.utils.parseEther('1' )});
+    await mintTx.wait();
+
+    expect(await soul.balanceOf(signer.address)).to.be.equal(1);
+
+    const balanceAfterDeposit = await signer.provider.getBalance(soul.address);
+    expect(ethers.utils.formatEther(balanceAfterDeposit.toString())).to.eq('1.0');
+
+    const mint2Tx = await soul.lockMint(signer.address, 'www.test.com/1', { value: ethers.utils.parseEther('1') });
+    await mint2Tx.wait()
+
+    expect(await soul.balanceOf(signer.address)).to.be.eq(2);
+
+    const balanceAftersSecondDeposit = await signer.provider.getBalance(soul.address);
+    expect(ethers.utils.formatEther(balanceAftersSecondDeposit.toString())).to.eq('2.0');
+
+    await expect(soul.withdrawEther(user1.address, balanceAfterDeposit)).to.emit(soul, 'WithdrawStuckEther');
+
+    const balanceAftersWithdraw = await signer.provider.getBalance(soul.address);
+    expect(ethers.utils.formatEther(balanceAftersWithdraw.toString())).to.eq('1.0');
   });
 });
